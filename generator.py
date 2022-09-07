@@ -1,11 +1,13 @@
-from ctypes.wintypes import WORD
 from rich.console import Console
 from rich.traceback import install
 import random
 c = Console()
 install()
 
-class pswd:
+## Fix random list bug
+## any values with the [min, max] usage do not account for intermedate values only the min and max values work
+
+class pswd_generator:
     def __init__(self) -> None:
         self.number_of_words = [2, 2]
         self.numbers = [1, 2]
@@ -14,8 +16,8 @@ class pswd:
         self.number_of_symbols = [0, 1]
         self.use_symbol_chars = False
         self.casing_style = "single" # Options: 'single', 'CamelCase', 'none'
+        
         self.left_hand_mode = False
-
         self.left_hand_chars = ["a", "s", "d", "f", "g", "q", "w", "e", "r", "t", "z", "x", "c", "v", "b"]
         self.left_hand_numbers = [1, 2, 3, 4, 5, 6]
         self.left_hand_symbols = ["!", "@", "#", "$", "%", "^"]
@@ -36,6 +38,8 @@ class pswd:
                     outList.append(i)
         
         self.current_word_list = outList
+        if len(self.current_word_list) == 0:
+            raise Exception("Filter Returned 0 Results")
         return len(self.current_word_list)
     
     def filter_letters(self, exclude=None, include=None):
@@ -58,7 +62,8 @@ class pswd:
             self.current_word_list = outList
         
         if len(self.current_word_list) == 0:
-            c.print("Filter Return No Results...", style="red")
+            raise Exception("Filter Returned 0 Results")
+
         return len(self.current_word_list)
         
     def filter_left_hand(self):
@@ -133,7 +138,10 @@ class pswd:
             self.casing_style = "single"
             self.left_hand_mode = False
 
-    def generate_pswd(self):
+    def generate_pswd(self, simpleOutput=False):
+        if len(self.current_word_list) == 0:
+            raise Exception("Word List is currently empty")
+        
         words = []
         words_plain = []
         for i in range(0, random.choice(self.number_of_words)):
@@ -176,20 +184,7 @@ class pswd:
         for i in symbols:
             password_result += i
         
-        return {"result": password_result, "words": words, "words_plain": words_plain, "numbers": numbers}
-
-
-
-#####################################
-########### Program Start ###########
-#####################################
-
-password = pswd()
-password.casing_style = "CamelCase"
-password.use_symbol_chars = True
-for i in range(0, 5):
-    result = password.generate_pswd()
-    if result["words_plain"] != None:
-        c.print(result["words_plain"])
-    c.print(result["words"])
-    c.print(result["result"])
+        if simpleOutput:
+            return password_result
+        else:
+            return {"result": password_result, "words": words, "words_plain": words_plain, "numbers": numbers}
