@@ -137,7 +137,7 @@ class pswd_generator:
         
         words = []
         words_plain = []
-        for i in range(0, random.choice(self.number_of_words)):
+        for i in range(0, random.randint(self.number_of_words[0], self.number_of_words[1])):
             curWord = random.choice(self.current_word_list)
             if self.use_symbol_chars:
                 words.append(self.symbol_char(curWord))
@@ -146,14 +146,14 @@ class pswd_generator:
                 words.append(curWord)
         
         numbers = []
-        for i in range(0, random.choice(self.numbers)):
+        for i in range(self.numbers[0], self.numbers[1]):
             if self.left_hand_mode:
                 numbers.append(random.randint(1, 6))
             else:
                 numbers.append(random.randint(0, 9))
 
         symbols = []
-        for i in range(0, random.choice(self.number_of_symbols)):
+        for i in range(self.number_of_symbols[0], self.number_of_symbols[1]):
             if self.left_hand_mode:
                 symbols.append(random.choice(self.left_hand_symbols))
             else:
