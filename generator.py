@@ -1,11 +1,4 @@
-from rich.console import Console
-from rich.traceback import install
 import random
-c = Console()
-install()
-
-## Fix random list bug
-## any values with the [min, max] usage do not account for intermedate values only the min and max values work
 
 class pswd_generator:
     def __init__(self) -> None:

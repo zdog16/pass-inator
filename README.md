@@ -1,5 +1,5 @@
 # Pass-Inator
-## Simple password generator for creating secure passwords.
+## A pure Python Simple password generator for creating secure passwords.
 This tool is designed to allow you to create easy to remember passwords while still being relativly secure. Perfect for home lab services that you access frequently but still want to be secure.
 
 **Plase Note! This tool is not intented for creating highly secure passwords**</br>
