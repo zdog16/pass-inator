@@ -1,4 +1,8 @@
+from email.mime import base
 import random
+import base64
+import requests
+
 
 class pswd_generator:
     def __init__(self) -> None:
@@ -16,7 +20,18 @@ class pswd_generator:
         self.left_hand_symbols = ["!", "@", "#", "$", "%", "^"]
         self.all_symbols = ["!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "_", "+", "="]
         
-        self.full_word_list = open("words.txt", "r").read().split("\n")
+        response = requests.get("https://api.github.com/repos/zdog16/pass-inator/contents/words.txt")
+        if response.status_code == requests.codes.ok:
+            jsonResponse = response.json()
+            content = base64.b64decode(jsonResponse['content'])
+            jsonString = content.decode('utf-8')
+            self.full_word_list = jsonString.split('\n')
+        else:
+            try:
+                self.full_word_list = open("words.txt", "r").read().split("\n")
+            except FileNotFoundError:
+                raise Exception("The Words list was not found. Please connect to the internet or put the words.txt file in the same directory.")
+
         self.current_word_list = self.full_word_list
         self.filter_length(self.min_word_length, self.max_word_length)
 
