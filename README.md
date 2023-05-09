@@ -62,3 +62,18 @@ This function will enable the `left_hand_mode` property which filters all words,
 
 ## `reset_word_list()`
 This funciton will reset the current word list to the full 58,000 words included in ` words.txt `. This can be useful if you're generate multiple passwords within the same script and you want ot use different settings for each. It will also bypass the `min_word_length` and `max_word_length` properties set when initiating the class so you'll have to call ` filter_length() ` again to re-apply them.
+
+## `upload_settings(settings: dict)`
+This function allows you to input a dict containing all of the password settings in one go, your dict match the following formatting.
+```
+{
+	"number_of_words": [{int: min occurances}, {int: max occurances}],
+	"numbers": [{int: min occurances}, {int: max occurances}],
+	"min_word_length": {int},
+	"max_word_length": {int},
+	"number_of_symbols": [{int: min occurances}, {int: max occurances}],
+	"use_symbol_chars": {bool},
+	"casing_style": {str},
+	"left_hand_mode": {bool}
+}
+```
