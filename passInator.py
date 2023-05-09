@@ -1,25 +1,46 @@
-import random
+import secrets
 import base64
+from typing import Any
 import requests
 
-
-class pswd_generator:
+class casingStyle:
     def __init__(self) -> None:
+        self.single = "single"
+        self.CamelCase = "CamelCase"
+        self.none = "none"
+
+class Generator:
+    def __init__(self, words_url: str = 'https://api.github.com/repos/zdog16/pass-inator/contents/words.txt') -> None:
+        # passprase settings
         self.number_of_words = [2, 2]
         self.numbers = [1, 2]
         self.min_word_length = 3
         self.max_word_length = 5
         self.number_of_symbols = [0, 1]
         self.use_symbol_chars = False
-        self.casing_style = "single" # Options: 'single', 'CamelCase', 'none'
-        
+        self.casingStyles = casingStyle()
+        self.casing_style = self.casingStyles.CamelCase
+
+        # password settings
+        self.password_length = 6
+        self.useLowerLetters = True
+        self.useUpperLetters = True
+        self.useSymbols = True
+        self.useNumbers = True
+
+        # character pools
+        self.LetterPool = 'abcdefghijklmnopqrstuvwxyz'
+        self.numberPool = '1234567890'
         self.left_hand_mode = False
-        self.left_hand_chars = ["a", "s", "d", "f", "g", "q", "w", "e", "r", "t", "z", "x", "c", "v", "b"]
-        self.left_hand_numbers = [1, 2, 3, 4, 5, 6]
-        self.left_hand_symbols = ["!", "@", "#", "$", "%", "^"]
-        self.all_symbols = ["!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "_", "+", "="]
+        self.left_hand_chars = 'asdfgqwertzxcvb'
+        self.left_hand_numbers = '123456'
+        self.left_hand_symbols = '!@#$%^'
+        self.all_symbols = '!@#$%^&*()-_+='
+        self.char_pool = ''
+        self.generate_char_pool()
         
-        response = requests.get("https://api.github.com/repos/zdog16/pass-inator/contents/words.txt")
+        # word pool
+        response = requests.get(words_url)
         if response.status_code == requests.codes.ok:
             jsonResponse = response.json()
             content = base64.b64decode(jsonResponse['content'])
@@ -32,9 +53,9 @@ class pswd_generator:
                 raise Exception("The Words list was not found. Please connect to the internet or put the words.txt file in the same directory.")
 
         self.current_word_list = self.full_word_list
-        self.filter_length(self.min_word_length, self.max_word_length)
+        self.filter_word_length(self.min_word_length, self.max_word_length)
 
-    def filter_length(self, min_length, max_length=None):
+    def filter_word_length(self, min_length, max_length=None):
         outList = []
         for i in self.current_word_list:
             if len(i) >= min_length:
@@ -49,7 +70,7 @@ class pswd_generator:
             raise Exception("Filter Returned 0 Results")
         return len(self.current_word_list)
     
-    def filter_letters(self, exclude=None, include=None):
+    def filter_word_letters(self, exclude=None, include=None):
         outList = []
         
         if exclude != None:
@@ -73,7 +94,7 @@ class pswd_generator:
 
         return len(self.current_word_list)
         
-    def filter_left_hand(self):
+    def filter_word_left_hand(self):
         self.left_hand_mode = True
         outList = []
 
@@ -145,25 +166,67 @@ class pswd_generator:
             self.casing_style = "single"
             self.left_hand_mode = False
 
+        self.reset_word_list()
+        self.filter_word_length(self.min_word_length, self.max_word_length)
+
     def upload_settings(self, settings: dict) -> None:
-        self.number_of_words = settings["number_of_words"]
-        self.numbers = settings["numbers"]
-        self.min_word_length = settings["min_word_length"]
-        self.max_word_length = settings["max_word_length"]
-        self.number_of_symbols = settings["number_of_symbols"]
-        self.use_symbol_chars = settings["use_symbol_chars"]
-        self.casing_style = settings["casing_style"]
-        self.left_hand_mode = settings["left_hand_mode"]
+        for key in settings:
+            if key == "number_of_words":
+                self.number_of_words = settings[key]
+            elif key == "numbers":
+                self.numbers = settings[key]
+            elif key == "min_word_length":
+                self.min_word_length = settings[key]
+            elif key == "max_word_length":
+                self.max_word_length = settings[key]
+            elif key == "number_of_symbols":
+                self.number_of_symbols = settings[key]
+            elif key == "use_symbol_chars":
+                self.use_symbol_chars = settings[key]
+            elif key == "casing_style":
+                self.casing_style = settings[key]
+            elif key == "left_hand_mode":
+                self.left_hand_mode = settings[key]
+            elif key == "password_length":
+                self.password_length = settings[key]
+            elif key == "useLowerLetters":
+                self.useLowerLetters = settings[key]
+            elif key == "useUppderLetters":
+                self.useUpperLetters = settings[key]
+            elif key == "useSymbols":
+                self.useSymbols = settings[key]
+            elif key == "useNumbers":
+                self.useNumbers = settings[key]
 
+    def generate_char_pool(self):
+        self.char_pool = ""
+        if self.left_hand_mode:
+            if self.useLowerLetters:
+                self.char_pool = self.char_pool + self.left_hand_chars
+            if self.useUpperLetters:
+                self.char_pool = self.char_pool + self.left_hand_chars.upper()
+            if self.useNumbers:
+                self.char_pool = self.char_pool + self.left_hand_numbers
+            if self.useSymbols:
+                self.char_pool = self.char_pool + self.left_hand_symbols
+        else:
+            if self.useLowerLetters:
+                self.char_pool = self.char_pool + self.LetterPool
+            if self.useUpperLetters:
+                self.char_pool = self.char_pool + self.LetterPool.upper()
+            if self.useNumbers:
+                self.char_pool = self.char_pool + self.numberPool
+            if self.useSymbols:
+                self.char_pool = self.char_pool + self.all_symbols
 
-    def generate_pswd(self, simpleOutput=False):
+    def generate_passphrase(self, simpleOutput=False):
         if len(self.current_word_list) == 0:
             raise Exception("Word List is currently empty")
         
         words = []
         words_plain = []
-        for i in range(0, random.randint(self.number_of_words[0], self.number_of_words[1])):
-            curWord = random.choice(self.current_word_list)
+        for i in range(0, secrets.SystemRandom.randrange(self.number_of_words[0], self.number_of_words[1])):
+            curWord = secrets.choice(self.current_word_list)
             if self.use_symbol_chars:
                 words.append(self.symbol_char(curWord))
                 words_plain.append(curWord)
@@ -173,16 +236,16 @@ class pswd_generator:
         numbers = []
         for i in range(self.numbers[0], self.numbers[1]):
             if self.left_hand_mode:
-                numbers.append(random.randint(1, 6))
+                numbers.append(secrets.SystemRandom.randrange(1, 6))
             else:
-                numbers.append(random.randint(0, 9))
+                numbers.append(secrets.SystemRandom.randrange(0, 9))
 
         symbols = []
         for i in range(self.number_of_symbols[0], self.number_of_symbols[1]):
             if self.left_hand_mode:
-                symbols.append(random.choice(self.left_hand_symbols))
+                symbols.append(secrets.choice(self.left_hand_symbols))
             else:
-                symbols.append(random.choice(self.all_symbols))
+                symbols.append(secrets.choice(self.all_symbols))
     
         if not self.left_hand_mode:
             if self.casing_style == "single":
@@ -206,3 +269,9 @@ class pswd_generator:
             return password_result
         else:
             return {"result": password_result, "words": words, "words_plain": words_plain, "numbers": numbers}
+        
+    def generate_password(self) -> str:
+        password = ""
+        for char in range(0, self.password_length):
+            password = password + secrets.choice(self.char_pool)
+        return password
