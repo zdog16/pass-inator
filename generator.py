@@ -1,4 +1,3 @@
-from email.mime import base
 import random
 import base64
 import requests
@@ -127,7 +126,7 @@ class pswd_generator:
             self.left_hand_mode = False
 
         elif strength == "medium":
-            self.number_of_words = [2, 2]
+            self.number_of_words = [2, 3]
             self.numbers = [1, 2]
             self.min_word_length = 3
             self.max_word_length = 5
@@ -137,7 +136,7 @@ class pswd_generator:
             self.left_hand_mode = False
 
         elif strength == "low":
-            self.number_of_words = 2
+            self.number_of_words = [2, 2]
             self.numbers = [0, 1]
             self.min_word_length = 2
             self.max_word_length = 4
@@ -145,6 +144,17 @@ class pswd_generator:
             self.use_symbol_chars = False
             self.casing_style = "single"
             self.left_hand_mode = False
+
+    def upload_settings(self, settings: dict) -> None:
+        self.number_of_words = settings["number_of_words"]
+        self.numbers = settings["numbers"]
+        self.min_word_length = settings["min_word_length"]
+        self.max_word_length = settings["max_word_length"]
+        self.number_of_symbols = settings["number_of_symbols"]
+        self.use_symbol_chars = settings["use_symbol_chars"]
+        self.casing_style = settings["casing_style"]
+        self.left_hand_mode = settings["left_hand_mode"]
+
 
     def generate_pswd(self, simpleOutput=False):
         if len(self.current_word_list) == 0:
