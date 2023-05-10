@@ -1,6 +1,5 @@
 import secrets
 import base64
-from typing import Any
 import requests
 
 class casingStyle:

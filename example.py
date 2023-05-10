@@ -1,10 +1,6 @@
-from rich.console import Console
-from rich.traceback import install
 import argparse
 import pyperclip
 import passInator
-install()
-c = Console()
 
 
 customSettings = {
@@ -43,9 +39,8 @@ while True:
     else:
         password = generator.generate_password()
 
-    c.clear()
-    c.print(f"How about: {password}")
+    print(f"How about: {password}")
     if input(">>") != "":
         pyperclip.copy(password)
-        c.print(f"{password} copied to clipboard")
+        print(f"{password} copied to clipboard")
         break
