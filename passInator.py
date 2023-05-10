@@ -191,7 +191,7 @@ class Generator:
                 self.password_length = settings[key]
             elif key == "useLowerLetters":
                 self.useLowerLetters = settings[key]
-            elif key == "useUppderLetters":
+            elif key == "useUpperLetters":
                 self.useUpperLetters = settings[key]
             elif key == "useSymbols":
                 self.useSymbols = settings[key]
@@ -225,7 +225,7 @@ class Generator:
         
         words = []
         words_plain = []
-        for i in range(0, secrets.SystemRandom.randrange(self.number_of_words[0], self.number_of_words[1])):
+        for i in range(0, secrets.choice(range(self.number_of_words[0], self.number_of_words[1]))):
             curWord = secrets.choice(self.current_word_list)
             if self.use_symbol_chars:
                 words.append(self.symbol_char(curWord))
@@ -236,9 +236,9 @@ class Generator:
         numbers = []
         for i in range(self.numbers[0], self.numbers[1]):
             if self.left_hand_mode:
-                numbers.append(secrets.SystemRandom.randrange(1, 6))
+                numbers.append(secrets.choice(range(1, 6)))
             else:
-                numbers.append(secrets.SystemRandom.randrange(0, 9))
+                numbers.append(secrets.choice(range(0, 9)))
 
         symbols = []
         for i in range(self.number_of_symbols[0], self.number_of_symbols[1]):
