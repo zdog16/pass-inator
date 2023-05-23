@@ -224,13 +224,19 @@ class Generator:
         
         words = []
         words_plain = []
-        for i in range(0, secrets.choice(range(self.number_of_words[0], self.number_of_words[1]))):
+        if self.number_of_words[0] != self.number_of_words[1]:
+            cur_number_of_words = secrets.choice(range(self.number_of_words[0], self.number_of_words[1]))
+        else:
+            cur_number_of_words = self.number_of_words[0]
+        
+        for i in range(0, cur_number_of_words):
             curWord = secrets.choice(self.current_word_list)
             if self.use_symbol_chars:
                 words.append(self.symbol_char(curWord))
                 words_plain.append(curWord)
             else:
                 words.append(curWord)
+    
         
         numbers = []
         for i in range(self.numbers[0], self.numbers[1]):
